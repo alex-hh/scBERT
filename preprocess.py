@@ -18,6 +18,7 @@ def main(args):
             total_genes_found += 1
         else:
             print("Gene not found in data: ", ref[i], " at index: ", i)
+            print("Counts for missing gene", counts[: , i])
 
     counts = counts.tocsr()
     new = ad.AnnData(X=counts)
