@@ -21,10 +21,7 @@ from utils import *
 def main(args):
     device = torch.device("cuda" if torch.cuda.is_available() and not args.force_cpu else "cpu")
     CLASS = args.bin_num + 2
-    SEED = args.seed
-    EPOCHS = args.epoch
     SEQ_LEN = args.gene_num + 1
-    UNASSIGN = args.novel_type
 
     model = PerformerLM(
         num_tokens = CLASS,
@@ -38,8 +35,7 @@ def main(args):
 
     data = sc.read_h5ad('data/norman/ctrl_norman_preprocessed.h5ad')
 
-    path = args.model_path
-    ckpt = torch.load(path)
+    ckpt = torch.load(args.model_path, map_location=device)
     model.load_state_dict(ckpt['model_state_dict'])
     for param in model.parameters():
         param.requires_grad = False
@@ -94,7 +90,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--bin_num", type=int, default=5, help='Number of bins.')
     parser.add_argument("--gene_num", type=int, default=16906, help='Number of genes.')
-    parser.add_argument("--model_path", type=str, default='./finetuned.pth', help='Path of finetuned model.')
+    parser.add_argument("--model_path", type=str, default='data/panglao_pretrain.pth')
     parser.add_argument("--force_cpu", action="store_true")
 
     args = parser.parse_args()
