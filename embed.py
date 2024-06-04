@@ -46,6 +46,9 @@ def main(args):
     model.eval()
     embs = []
 
+    if args.average_embeddings:
+        raise NotImplementedError("Averaging embeddings not implemented yet.")
+
     with torch.no_grad():
         for index in tqdm.tqdm(range(batch_size)):
             full_seq = data[index].toarray()[0]
@@ -69,6 +72,7 @@ if __name__ == "__main__":
     parser.add_argument("--gene_num", type=int, default=16906, help='Number of genes.')
     parser.add_argument("--model_path", type=str, default='data/panglao_pretrain.pth')
     parser.add_argument("--force_cpu", action="store_true")
+    parser.add_argument("--average_embeddings", action="store_true")
 
     args = parser.parse_args()
     main(args)

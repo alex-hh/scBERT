@@ -40,6 +40,7 @@ def main(args):
         if ref[i] in obj:
             loc = obj.index(ref[i])
             counts[:,i] = data.X[:,loc]
+            print(counts[:,i])
             total_genes_found += 1
         else:
             missing_genes.append(ref[i])

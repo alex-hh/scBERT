@@ -78,9 +78,13 @@ def main(args):
                     full_seq = full_seq.unsqueeze(0)
                     emb = model(full_seq, return_encodings=True)
                     # TODO: add to the anndata file or whatever
-                    embs.append(emb.cpu().numpy())
-                all_pert_embs[pert] = np.array(embs)
-                print(all_pert_embs[pert].shape)
+                    embs.append(emb.squeeze(0).cpu().numpy())
+                
+                if args.average_embeddings:
+                    all_pert_embs[pert] = np.array(embs).mean(1)
+                    print(all_pert_embs[pert].shape)
+                else:
+                    raise NotImplementedError("Not implemented yet")
     
     # save the embeddings to gzipped pkl files
     with gzip.open('data/norman/scbert_perturbation_embeddings.pkl.gz', 'wb') as f:
@@ -92,6 +96,7 @@ if __name__ == "__main__":
     parser.add_argument("--bin_num", type=int, default=5, help='Number of bins.')
     parser.add_argument("--gene_num", type=int, default=16906, help='Number of genes.')
     parser.add_argument("--model_path", type=str, default='data/panglao_pretrain.pth')
+    parser.add_argument("--average_embeddings", action="store_true")
     parser.add_argument("--force_cpu", action="store_true")
 
     args = parser.parse_args()
