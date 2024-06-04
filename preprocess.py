@@ -15,24 +15,24 @@ def main(args):
         else:
             return None
 
-    gene_df = pd.read_csv("data/Homo_sapiens.gene_info", sep="\t")
-    gene_df["ensembl"] = gene_df["dbXrefs"].apply(get_ensembl)
-    gene_mapping = {
-        tup[0]: tup[1] for tup in gene_df[~gene_df["ensembl"].isnull()][["ensembl", "Symbol"]].values
-    }
-    new_var_names = []
-    mapped_genes = 0
-    for n in data.var_names:
-        if n in gene_mapping:
-            new_var_names.append(gene_mapping[n])
-            mapped_genes +=1
-        else:
-            new_var_names.append(n)
-    data.var_names = new_var_names
-    print(f"Mapped {mapped_genes} genes of {len(new_var_names)} in data; (total in reference data {len(panglao.var_names)})")
+    # gene_df = pd.read_csv("data/Homo_sapiens.gene_info", sep="\t")
+    # gene_df["ensembl"] = gene_df["dbXrefs"].apply(get_ensembl)
+    # gene_mapping = {
+    #     tup[0]: tup[1] for tup in gene_df[~gene_df["ensembl"].isnull()][["ensembl", "Symbol"]].values
+    # }
+    # new_var_names = []
+    # mapped_genes = 0
+    # for n in data.var_names:
+    #     if n in gene_mapping:
+    #         new_var_names.append(gene_mapping[n])
+    #         mapped_genes +=1
+    #     else:
+    #         new_var_names.append(n)
+    # data.var_names = new_var_names
+    # print(f"Mapped {mapped_genes} genes of {len(new_var_names)} in data; (total in reference data {len(panglao.var_names)})")
     counts = sparse.lil_matrix((data.X.shape[0],panglao.X.shape[1]),dtype=np.float32)
     ref = panglao.var_names.tolist()
-    obj = data.var_names.tolist()
+    obj = data.var.gene_symbols.tolist()  # correct for norman
 
     total_genes_found = 0
     missing_genes = []
@@ -43,9 +43,9 @@ def main(args):
             total_genes_found += 1
         else:
             missing_genes.append(ref[i])
-            pass
-            # print("Gene not found in data: ", ref[i], " at index: ", i)
-            # print("Counts for missing gene", counts[: , i])
+            # pass
+            print("Gene not found in data: ", ref[i], " at index: ", i)
+
     print("Total genes found: ", total_genes_found)
     print("Missing genes: ", len(missing_genes), missing_genes)
     with open("missing_genes.txt", "w") as f:
