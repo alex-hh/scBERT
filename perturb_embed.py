@@ -7,6 +7,7 @@ N.B. binning happens just by converting the datatype from float to long...
 # -*- coding: utf-8 -*-
 import argparse
 import gzip
+import tqdm
 import pickle as pkl
 from functools import reduce
 import numpy as np
@@ -66,9 +67,9 @@ def main(args):
                 gene_index = genes.index(pert)
                 batch_size = slice_adata.shape[0]
                 embs = []
-                for index in range(batch_size):
+                for index in tqdm.tqdm(range(batch_size)):
                     # now we need to set the measurement for the perturbed gene to 0
-                    full_seq = data[index].toarray()[0]
+                    full_seq = slice_adata.X[index].toarray()[0]
                     print(full_seq.shape, full_seq[gene_index], full_seq)
                     full_seq[gene_index] = 0
                     full_seq[full_seq > (CLASS - 2)] = CLASS - 2
