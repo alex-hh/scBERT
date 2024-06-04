@@ -6,6 +6,8 @@ N.B. binning happens just by converting the datatype from float to long...
 """
 # -*- coding: utf-8 -*-
 import argparse
+import gzip
+import pickle as pkl
 from functools import reduce
 import numpy as np
 import pandas as pd
@@ -33,7 +35,7 @@ def main(args):
         g2v_position_emb = True
     )
 
-    data = sc.read_h5ad(args.data_path)
+    data = sc.read_h5ad("data/norman/ctrl_norman_preprocessed.h5ad")
     data = data.X
 
     path = args.model_path
@@ -58,12 +60,16 @@ def main(args):
             # TODO: add to the anndata file or whatever
             embs.append(emb.cpu().numpy())
 
+    embs = np.array(embs)
+    print("Shape of embeddings: ", embs.shape)
+    with gzip.open('data/norman/scbert_control_embeddings.pkl.gz', 'wb') as f:
+        pkl.dump(embs, f)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--bin_num", type=int, default=5, help='Number of bins.')
     parser.add_argument("--gene_num", type=int, default=16906, help='Number of genes.')
-    parser.add_argument("--data_path", type=str, default='./data/Zheng68K.h5ad', help='Path of data for predicting.')
     parser.add_argument("--model_path", type=str, default='./finetuned.pth', help='Path of finetuned model.')
     parser.add_argument("--force_cpu", action="store_true")
 
